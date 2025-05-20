@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class AstralColor(Enum):
+class AstralColorEnum(Enum):
     BLUE = "blue"
     RED = "red"
     PURPLE = "purple"
