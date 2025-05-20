@@ -3,7 +3,7 @@ from domain.models.astral_object import AstralObject
 
 
 class Soloon(AstralObject):
-    def __init__(self, color: AstralColorEnum, row: int, column: int):
+    def __init__(self, row: int, column: int, color: AstralColorEnum):
         self.color: AstralColorEnum = color
         super().__init__(row=row, column=column)
 

@@ -3,7 +3,7 @@ from domain.models.astral_object import AstralObject
 
 
 class Cometh(AstralObject):
-    def __init__(self, direction: ComethDirectionEnum, row: int, column: int):
+    def __init__(self, row: int, column: int, direction: ComethDirectionEnum):
         self.direction: ComethDirectionEnum = direction
         super().__init__(row=row, column=column)
 
