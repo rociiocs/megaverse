@@ -7,3 +7,6 @@ class Polyanet(AstralObject):
 
     def __repr__(self):
         return f'Polyanet {self.row}x{self.column}'
+
+    def get_plural_name(self) -> str:
+        return 'polyanets'

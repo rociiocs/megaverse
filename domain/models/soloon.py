@@ -9,3 +9,6 @@ class Soloon(AstralObject):
 
     def __repr__(self):
         return f'Soloon {self.row}x{self.column} ({self.color})'
+
+    def get_plural_name(self) -> str:
+        return 'soloons'

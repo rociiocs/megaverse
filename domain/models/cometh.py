@@ -9,3 +9,6 @@ class Cometh(AstralObject):
 
     def __repr__(self):
         return f'Cometh {self.row}x{self.column} ({self.direction})'
+
+    def get_plural_name(self) -> str:
+        return 'comeths'
