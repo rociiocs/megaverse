@@ -1,7 +1,8 @@
-from services.megaverse_map_creator import MegaverseMapCreator
 from dotenv import load_dotenv
+
+from application.create_megaverse_use_case import CreateMegaverseMapUseCase
 
 load_dotenv()
 
 if __name__ == "__main__":
-    MegaverseMapCreator().create_map()
+    CreateMegaverseMapUseCase().create_map()

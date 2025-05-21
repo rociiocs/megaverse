@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class ComethDirectionEnum(Enum):
+class DirectionEnum(Enum):
     UP = "up"
     DOWN = "down"
     RIGHT = "right"

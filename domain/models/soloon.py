@@ -1,14 +1,17 @@
+from dataclasses import dataclass
+
 from domain.enums.astral_color_enum import AstralColorEnum
 from domain.models.astral_object import AstralObject
 
 
+@dataclass
 class Soloon(AstralObject):
-    def __init__(self, row: int, column: int, color: AstralColorEnum):
-        self.color: AstralColorEnum = color
-        super().__init__(row=row, column=column)
+    color: AstralColorEnum
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'Soloon {self.row}x{self.column} ({self.color})'
 
-    def get_plural_name(self) -> str:
-        return 'soloons'
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data.update({"color": self.color.value})
+        return data

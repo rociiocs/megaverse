@@ -1,14 +1,17 @@
-from domain.enums.cometh_direction_enum import ComethDirectionEnum
+from dataclasses import dataclass
+
+from domain.enums.cometh_direction_enum import DirectionEnum
 from domain.models.astral_object import AstralObject
 
 
+@dataclass
 class Cometh(AstralObject):
-    def __init__(self, row: int, column: int, direction: ComethDirectionEnum):
-        self.direction: ComethDirectionEnum = direction
-        super().__init__(row=row, column=column)
+    direction: DirectionEnum
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'Cometh {self.row}x{self.column} ({self.direction})'
 
-    def get_plural_name(self) -> str:
-        return 'comeths'
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data.update({"direction": self.direction.value})
+        return data

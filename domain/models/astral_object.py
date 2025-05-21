@@ -1,10 +1,14 @@
 from abc import ABC
+from dataclasses import dataclass
 
 
+@dataclass
 class AstralObject(ABC):
-    def __init__(self, row: int, column: int):
-        self.row: int = row
-        self.column: int = column
+    row: int
+    column: int
 
-    def get_plural_name(self) -> str:
-        pass
+    def to_dict(self) -> dict:
+        return {
+            'row': self.row,
+            'column': self.column,
+        }

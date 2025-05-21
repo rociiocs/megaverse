@@ -1,12 +1,10 @@
+from dataclasses import dataclass
+
 from domain.models.astral_object import AstralObject
 
 
+@dataclass
 class Polyanet(AstralObject):
-    def __init__(self, row: int, column: int):
-        super().__init__(row=row, column=column)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'Polyanet {self.row}x{self.column}'
-
-    def get_plural_name(self) -> str:
-        return 'polyanets'
