@@ -5,7 +5,7 @@ import requests
 from requests import Response
 
 
-class Httpclient:
+class HttpClient:
     def post(
             self,
             url: str,

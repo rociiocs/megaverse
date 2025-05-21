@@ -64,3 +64,8 @@ This command deletes all the astral objects that were created before and they we
 ```bash
 python megaverse.py delete
 ```
+
+## Run unit tests
+```bash
+python -m unittest
+```

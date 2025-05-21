@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 from application.create_megaverse_use_case import CreateMegaverseMapUseCase
 from application.delete_megaverse_use_case import DeleteMegaverseMapUseCase
-from infraestructure.container import Container
+from infrastructure.container import Container
 
 load_dotenv()
 

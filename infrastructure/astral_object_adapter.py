@@ -1,7 +1,7 @@
 from typing import Optional
 
 from domain.models.astral_object import AstralObject
-from infraestructure.factories.astral_object_factory import AstralObjectFactory
+from infrastructure.factories.astral_object_factory import AstralObjectFactory
 
 
 class AstralObjectAdapter:
@@ -32,6 +32,9 @@ class AstralObjectAdapter:
 
     def __get_object_type_and_property_value(self, name: str) -> tuple[str, Optional[str]]:
         try:
+            if name is None:
+                raise ValueError
+
             split_name = name.lower().split("_")
 
             if len(split_name) < 2:

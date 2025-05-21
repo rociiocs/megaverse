@@ -5,8 +5,8 @@ from requests import Response
 
 from domain.models.astral_object import AstralObject
 from domain.repositories.map_repository import MapRepository
-from infraestructure.astral_object_adapter import AstralObjectAdapter
-from infraestructure.common.http_client import Httpclient
+from infrastructure.astral_object_adapter import AstralObjectAdapter
+from infrastructure.common.http_client import HttpClient
 
 
 class ApiMapRepository(MapRepository):
@@ -14,9 +14,8 @@ class ApiMapRepository(MapRepository):
 
     def __init__(
             self,
-            http_client: Httpclient,
+            http_client: HttpClient,
             astral_object_adapter: AstralObjectAdapter,
-            megaverse_url: str,
             candidate_id: str,
             goal_map_url: str,
             cometh_url: str,
@@ -25,7 +24,6 @@ class ApiMapRepository(MapRepository):
     ) -> None:
         self.http_client = http_client
         self.astral_object_adapter = astral_object_adapter
-        self.megaverse_url = megaverse_url
         self.candidate_id = candidate_id
         self.goal_map_url = goal_map_url
         self.cometh_url = cometh_url
@@ -39,7 +37,7 @@ class ApiMapRepository(MapRepository):
         }
 
     def fetch_astral_objects(self) -> list[AstralObject]:
-        url: str = self.goal_map_url.format(url=self.megaverse_url, candidate_id=self.candidate_id)
+        url: str = self.goal_map_url.format(candidate_id=self.candidate_id)
 
         response: Response = self.http_client.get(url)
 
