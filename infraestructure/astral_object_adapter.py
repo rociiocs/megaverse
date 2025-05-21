@@ -1,13 +1,13 @@
 from typing import Optional
 
-from infraestructure.factories.astral_object_factory import AstralObjectFactory
 from domain.models.astral_object import AstralObject
+from infraestructure.factories.astral_object_factory import AstralObjectFactory
 
 
 class AstralObjectAdapter:
     SPACE = "SPACE"
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.astral_objects_factory = AstralObjectFactory()
 
     def get_list_astral_objects(self, megaverse_map_json: dict) -> list[AstralObject]:

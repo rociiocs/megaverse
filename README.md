@@ -1,5 +1,10 @@
 # Megaverse
-Megaverse Challenge for Crossmint.
+Megaverse Challenge for Crossmint. It consists:
+- Gets a goal megaverse map from Crossmint API
+- Process astral objects from the goal megaverse map
+- Create astral objects sending data to Crossmint API
+- Delete astral objects in case that you get some error in the creation process
+
 This project uses Python 3.11 with a virtual environment to keep dependencies isolated.
 
 ## Requirements
@@ -41,10 +46,21 @@ pip install -r requirements.txt
 ```bash
 cp .env.example .env
 ```
-Change variables with your data.
+IMPORTANT: Change variables with your correct data. (API must be changed for the correct one)
 
 ## Run code
 
+### Create megaverse app
+This command will get the goal map, process astral objects and create them to get your megaverse map.
+In case of error, all the astral objects were saved in /resources/multiple_data.json file to delete it. 
+(NOTE: To delete astral objects created you have to use "delete" command)
+
 ```bash
-python megaverse.py
+python megaverse.py create
+```
+### Delete megaverse app
+This command deletes all the astral objects that were created before and they were saved in /resources/multiple_data.json file.
+
+```bash
+python megaverse.py delete
 ```

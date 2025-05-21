@@ -9,5 +9,9 @@ class MapRepository(ABC):
         pass
 
     @abstractmethod
-    def create_astral_object(self, astral_object: AstralObject) -> None:
+    def create_astral_objects(self, astral_objects: list[AstralObject]) -> None:
+        pass
+
+    @abstractmethod
+    def delete_megaverse_map(self) -> None:
         pass

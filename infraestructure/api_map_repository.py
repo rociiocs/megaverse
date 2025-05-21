@@ -1,3 +1,4 @@
+import json
 import os
 
 from dotenv import load_dotenv
@@ -14,15 +15,15 @@ load_dotenv()
 class ApiMapRepository(MapRepository):
     MEGAVERSE_URL = os.getenv("MEGAVERSE_URL")
     CANDIDATE_ID = os.getenv("CANDIDATE_ID")
-    GOAL_MAP_URL = "{url}map/{candidate_id}/goal"
+    GOAL_MAP_URL = os.getenv("GOAL_MAP_URL")
 
     ASTRAL_OBJECTS_URL = {
-        "Cometh": "{url}comeths",
-        "Polyanet": "{url}polyanets",
-        "Soloon": "{url}soloons"
+        "Cometh": os.getenv("COMETHS_URL"),
+        "Polyanet": os.getenv("POLYANET_URL"),
+        "Soloon": os.getenv("SOLOONS_URL")
     }
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.api_connector = ApiConnector()
         self.astral_object_adapter = AstralObjectAdapter()
 
@@ -32,99 +33,6 @@ class ApiMapRepository(MapRepository):
         response: Response = self.api_connector.get(url)
 
         map_json = response.json().get('goal')
-        # map_json = [
-        #     ['RED_SOLOON', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE'],
-        #     ['SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'RIGHT_COMETH', 'SPACE', 'SPACE', 'SPACE',
-        #      'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE'],
-        #     ['SPACE', 'SPACE', 'POLYANET', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'SPACE', 'SPACE', 'UP_COMETH', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'SPACE', 'POLYANET', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE'],
-        #     ['SPACE', 'SPACE', 'POLYANET', 'SPACE', 'POLYANET', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'WHITE_SOLOON',
-        #      'POLYANET', 'POLYANET', 'SPACE', 'POLYANET', 'SPACE', 'SPACE', 'LEFT_COMETH', 'SPACE', 'SPACE'],
-        #     ['SPACE', 'SPACE', 'SPACE', 'POLYANET', 'SPACE', 'BLUE_SOLOON', 'POLYANET', 'POLYANET', 'PURPLE_SOLOON',
-        #      'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'LEFT_COMETH', 'SPACE', 'SPACE', 'POLYANET',
-        #      'POLYANET', 'SPACE', 'SPACE', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'RIGHT_COMETH'],
-        #     ['SPACE', 'SPACE', 'SPACE', 'POLYANET', 'SPACE', 'SPACE', 'WHITE_SOLOON', 'SPACE', 'POLYANET', 'POLYANET',
-        #      'SPACE', 'SPACE', 'DOWN_COMETH', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'POLYANET', 'POLYANET', 'BLUE_SOLOON',
-        #      'SPACE', 'SPACE', 'SPACE', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE'],
-        #     ['SPACE', 'SPACE', 'SPACE', 'SPACE', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'POLYANET',
-        #      'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE'],
-        #     ['SPACE', 'SPACE', 'SPACE', 'SPACE', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'POLYANET',
-        #      'SPACE', 'SPACE', 'SPACE', 'SPACE', 'RED_SOLOON', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'POLYANET', 'PURPLE_SOLOON', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE'],
-        #     ['SPACE', 'SPACE', 'SPACE', 'SPACE', 'WHITE_SOLOON', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'BLUE_SOLOON', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'SPACE', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE'],
-        #     ['SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'POLYANET', 'PURPLE_SOLOON', 'SPACE', 'SPACE', 'SPACE',
-        #      'SPACE', 'POLYANET', 'RED_SOLOON', 'SPACE', 'SPACE', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'SPACE', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'UP_COMETH', 'SPACE', 'SPACE'],
-        #     ['SPACE', 'SPACE', 'UP_COMETH', 'SPACE', 'SPACE', 'SPACE', 'POLYANET', 'POLYANET', 'SPACE', 'SPACE',
-        #      'SPACE', 'SPACE', 'POLYANET', 'SPACE', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'PURPLE_SOLOON', 'POLYANET',
-        #      'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE'],
-        #     ['SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'BLUE_SOLOON', 'POLYANET', 'POLYANET',
-        #      'SPACE', 'SPACE', 'POLYANET', 'SPACE', 'POLYANET', 'SPACE', 'SPACE', 'POLYANET', 'POLYANET', 'SPACE',
-        #      'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE'],
-        #     ['SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'POLYANET',
-        #      'POLYANET', 'SPACE', 'POLYANET', 'SPACE', 'POLYANET', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'SPACE', 'SPACE', 'SPACE', 'SPACE', 'LEFT_COMETH', 'SPACE', 'SPACE', 'DOWN_COMETH', 'SPACE'],
-        #     ['SPACE', 'SPACE', 'SPACE', 'SPACE', 'RIGHT_COMETH', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'SPACE', 'POLYANET', 'POLYANET', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE'],
-        #     ['SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'WHITE_SOLOON',
-        #      'POLYANET', 'POLYANET', 'SPACE', 'POLYANET', 'SPACE', 'POLYANET', 'POLYANET', 'BLUE_SOLOON', 'SPACE',
-        #      'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE'],
-        #     ['SPACE', 'LEFT_COMETH', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'POLYANET', 'POLYANET',
-        #      'SPACE', 'SPACE', 'POLYANET', 'SPACE', 'POLYANET', 'SPACE', 'SPACE', 'POLYANET', 'POLYANET',
-        #      'WHITE_SOLOON', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'RIGHT_COMETH', 'SPACE', 'SPACE',
-        #      'SPACE'],
-        #     ['SPACE', 'SPACE', 'SPACE', 'DOWN_COMETH', 'SPACE', 'SPACE', 'POLYANET', 'POLYANET', 'BLUE_SOLOON', 'SPACE',
-        #      'SPACE', 'SPACE', 'POLYANET', 'SPACE', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'POLYANET',
-        #      'POLYANET', 'BLUE_SOLOON', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE'],
-        #     ['SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'POLYANET', 'SPACE', 'SPACE', 'PURPLE_SOLOON', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'POLYANET', 'SPACE', 'SPACE', 'UP_COMETH', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE'],
-        #     ['SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'POLYANET', 'PURPLE_SOLOON', 'SPACE', 'SPACE', 'SPACE',
-        #      'SPACE', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'POLYANET', 'RED_SOLOON', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE'],
-        #     ['SPACE', 'SPACE', 'SPACE', 'SPACE', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'POLYANET',
-        #      'WHITE_SOLOON', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'SPACE', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE'],
-        #     ['RIGHT_COMETH', 'SPACE', 'SPACE', 'SPACE', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'SPACE', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE'],
-        #     ['SPACE', 'SPACE', 'SPACE', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'POLYANET', 'POLYANET',
-        #      'RED_SOLOON', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'WHITE_SOLOON', 'POLYANET', 'POLYANET',
-        #      'PURPLE_SOLOON', 'SPACE', 'SPACE', 'SPACE', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'SPACE'],
-        #     ['SPACE', 'SPACE', 'SPACE', 'POLYANET', 'SPACE', 'RED_SOLOON', 'POLYANET', 'POLYANET', 'BLUE_SOLOON',
-        #      'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'LEFT_COMETH', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'POLYANET',
-        #      'POLYANET', 'SPACE', 'SPACE', 'POLYANET', 'RED_SOLOON', 'SPACE', 'SPACE', 'DOWN_COMETH', 'SPACE', 'SPACE'],
-        #     ['SPACE', 'SPACE', 'POLYANET', 'SPACE', 'POLYANET', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'POLYANET',
-        #      'POLYANET', 'SPACE', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE'],
-        #     ['SPACE', 'SPACE', 'POLYANET', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'SPACE', 'UP_COMETH', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'SPACE', 'POLYANET', 'POLYANET', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE'],
-        #     ['SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE'],
-        #     ['SPACE', 'SPACE', 'SPACE', 'DOWN_COMETH', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'SPACE', 'SPACE', 'SPACE', 'SPACE', 'DOWN_COMETH', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'SPACE', 'SPACE', 'SPACE', 'SPACE', 'UP_COMETH', 'SPACE', 'SPACE', 'SPACE'],
-        #     ['SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'LEFT_COMETH', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE'],
-        #     ['SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'RIGHT_COMETH',
-        #      'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'LEFT_COMETH', 'SPACE',
-        #      'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE'],
-        #     ['SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE',
-        #      'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE', 'SPACE']]
 
         if map_json is None or self.__is_valid_map_format(map_json) is False:
             raise ValueError(f"Invalid map format: {map_json}")
@@ -133,15 +41,28 @@ class ApiMapRepository(MapRepository):
 
         return astral_objects
 
-    def create_astral_object(self, astral_object: AstralObject):
-        url = self.ASTRAL_OBJECTS_URL.get(astral_object.__class__.__name__).format(url=self.MEGAVERSE_URL)
+    def create_astral_objects(self, astral_objects: list[AstralObject]) -> None:
+        astral_objects_created: list[dict] = []
+        for astral_object in astral_objects:
+            url = self.ASTRAL_OBJECTS_URL.get(astral_object.__class__.__name__).format(url=self.MEGAVERSE_URL)
 
-        json = astral_object.to_dict()
-        json['candidateId'] = self.CANDIDATE_ID
+            data_json: dict = astral_object.to_dict()
+            data_json['candidateId'] = self.CANDIDATE_ID
 
-        print(f"{url} {json}")
+            try:
+                self.api_connector.post_retry(url=url, json=data_json)
+            except Exception as e:
+                print(astral_objects_created)
+                self.__save_data_list(astral_objects_created)
+                raise e
 
-        self.api_connector.post(url, json=json)
+            astral_objects_created.append({"url": url, "json": data_json})
+
+    def delete_megaverse_map(self) -> None:
+        data_list = self.__get_data_list()
+        for data in data_list:
+            print(f"Deleting {data}")
+            self.api_connector.delete_retry(url=data["url"], json=data["json"])
 
     def __is_valid_map_format(self, map_json: dict) -> bool:
         if not isinstance(map_json, list):
@@ -156,3 +77,19 @@ class ApiMapRepository(MapRepository):
                     return False
 
         return True
+
+    def __save_data_list(self, data_list: list[dict]) -> None:
+        dir_path = "resources"
+        file_path = os.path.join(dir_path, "multiple_data.json")
+
+        os.makedirs(dir_path, exist_ok=True)
+
+        print(f"Saving data list in {file_path}")
+        with open(file_path, "w") as f:
+            json.dump(data_list, f, indent=4)
+
+    def __get_data_list(self) -> list[dict]:
+        with open("resources/multiple_data.json", "r") as f:
+            data_list = json.load(f)
+
+        return data_list
