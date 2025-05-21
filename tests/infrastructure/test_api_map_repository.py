@@ -1,27 +1,30 @@
-import os
 from unittest import TestCase
-from unittest.mock import patch, mock_open, Mock
+from unittest.mock import Mock
 
 from requests import Response
 
 from domain.models.astral_object import AstralObject
 from infrastructure.api_map_repository import ApiMapRepository
 from infrastructure.astral_object_adapter import AstralObjectAdapter
+from infrastructure.common.file_service import FileService
 from infrastructure.common.http_client import HttpClient
 
 
 class TestApiMapRepository(TestCase):
     def setUp(self):
         self.http_client = Mock(HttpClient)
+        self.file_service = Mock(FileService)
         self.adapter = Mock(AstralObjectAdapter)
         self.candidate_id = "1234"
         self.goal_map_url = "http://example/{candidate_id}/map"
         self.cometh_url = "http://example/cometh.url"
         self.polyanet_url = "http://example/polyanet"
         self.soloon_url = "http://example/soloon"
+        self.file_path = "resources/multiple_data.json"
 
         self.api_map_repository = ApiMapRepository(
             http_client=self.http_client,
+            file_service=self.file_service,
             astral_object_adapter=self.adapter,
             candidate_id=self.candidate_id,
             goal_map_url=self.goal_map_url,
@@ -62,29 +65,18 @@ class TestApiMapRepository(TestCase):
         self.api_map_repository.create_astral_objects([astral_object])
 
         self.http_client.post_retry.assert_called_once()
-        self.assertTrue(os.path.exists("resources/multiple_data.json"))
+        expected_astral_objects_data = [
+            {'url': 'http://example/polyanet', 'json': {'row': 1, 'column': 1, 'candidateId': '1234'}}]
 
-    @patch("builtins.open", new_callable=mock_open, read_data='[{"url": "test", "json": {"a": 1}}]')
-    def test_get_data_list_success(self, mock_file):
-        data = self.api_map_repository._ApiMapRepository__get_data_list()
-        self.assertEqual(data, [{"url": "test", "json": {"a": 1}}])
+        self.file_service.save_data_list.assert_called_once_with(
+            data_list=expected_astral_objects_data,
+            file_path=self.file_path
+        )
 
-    @patch("builtins.open", side_effect=FileNotFoundError)
-    def test_get_data_list_file_not_found(self, mock_file):
-        data = self.api_map_repository._ApiMapRepository__get_data_list()
-        self.assertEqual(data, [])
-
-    @patch("builtins.open", new_callable=mock_open)
-    @patch("os.makedirs")
-    def test_save_data_list(self, mock_makedirs, mock_file):
-        self.api_map_repository._ApiMapRepository__save_data_list([{"test": "value"}])
-        mock_makedirs.assert_called_once_with("resources", exist_ok=True)
-        mock_file.assert_called_once_with("resources/multiple_data.json", "w")
-
-    @patch("infrastructure.api_map_repository.ApiMapRepository._ApiMapRepository__get_data_list")
-    def test_delete_megaverse_map(self, mock_get_data_list):
-        mock_get_data_list.return_value = [{"url": "url", "json": {"data": 123}}]
+    def test_delete_megaverse_map(self):
+        self.file_service.get_data_list.return_value = [{"url": "url", "json": {"data": 123}}]
 
         self.api_map_repository.delete_megaverse_map()
 
         self.http_client.delete_retry.assert_called_once_with(url="url", json={"data": 123})
+        self.file_service.get_data_list.assert_called_once_with(self.file_path)

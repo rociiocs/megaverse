@@ -52,14 +52,14 @@ IMPORTANT: Change variables with your correct data. (API must be changed for the
 
 ### Create megaverse app
 This command will get the goal map, process astral objects and create them to get your megaverse map.
-In case of error, all the astral objects were saved in /resources/multiple_data.json file to delete it. 
+In case of error, all the astral objects were saved in "/resources/multiple_data.json" file to delete it. 
 (NOTE: To delete astral objects created you have to use "delete" command)
 
 ```bash
 python megaverse.py create
 ```
 ### Delete megaverse app
-This command deletes all the astral objects that were created before and they were saved in /resources/multiple_data.json file.
+This command deletes all the astral objects that were created before, and they were saved in "/resources/multiple_data.json" file.
 
 ```bash
 python megaverse.py delete
