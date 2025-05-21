@@ -1,10 +1,9 @@
 from domain.repositories.map_repository import MapRepository
-from infraestructure.api_map_repository import ApiMapRepository
 
 
 class DeleteMegaverseMapUseCase:
-    def __init__(self) -> None:
-        self.map_repository: MapRepository = ApiMapRepository()
+    def __init__(self, map_repository: MapRepository) -> None:
+        self.map_repository: MapRepository = map_repository
 
     def delete_map(self) -> None:
         print("Deleting Megaverse Map")

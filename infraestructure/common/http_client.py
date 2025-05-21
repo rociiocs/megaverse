@@ -5,7 +5,7 @@ import requests
 from requests import Response
 
 
-class ApiConnector:
+class Httpclient:
     def post(
             self,
             url: str,

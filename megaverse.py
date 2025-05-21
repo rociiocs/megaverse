@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 from application.create_megaverse_use_case import CreateMegaverseMapUseCase
 from application.delete_megaverse_use_case import DeleteMegaverseMapUseCase
+from infraestructure.container import Container
 
 load_dotenv()
 
@@ -17,7 +18,12 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    container = Container()
+
     if args.action == "create":
-        CreateMegaverseMapUseCase().create_map()
+        create_megaverse_use_case: CreateMegaverseMapUseCase = container.create_megaverse_use_case()
+        create_megaverse_use_case.create_map()
+
     elif args.action == "delete":
-        DeleteMegaverseMapUseCase().delete_map()
+        delete_megaverse_use_case: DeleteMegaverseMapUseCase = container.delete_megaverse_use_case()
+        delete_megaverse_use_case.delete_map()

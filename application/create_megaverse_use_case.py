@@ -1,11 +1,10 @@
 from domain.models.astral_object import AstralObject
 from domain.repositories.map_repository import MapRepository
-from infraestructure.api_map_repository import ApiMapRepository
 
 
 class CreateMegaverseMapUseCase:
-    def __init__(self) -> None:
-        self.map_repository: MapRepository = ApiMapRepository()
+    def __init__(self, map_repository: MapRepository) -> None:
+        self.map_repository: MapRepository = map_repository
 
     def create_map(self) -> None:
         print("Creating Megaverse Map")

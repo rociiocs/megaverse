@@ -1,36 +1,47 @@
 import json
 import os
 
-from dotenv import load_dotenv
 from requests import Response
 
 from domain.models.astral_object import AstralObject
 from domain.repositories.map_repository import MapRepository
 from infraestructure.astral_object_adapter import AstralObjectAdapter
-from infraestructure.common.api_connector import ApiConnector
-
-load_dotenv()
+from infraestructure.common.http_client import Httpclient
 
 
 class ApiMapRepository(MapRepository):
-    MEGAVERSE_URL = os.getenv("MEGAVERSE_URL")
-    CANDIDATE_ID = os.getenv("CANDIDATE_ID")
-    GOAL_MAP_URL = os.getenv("GOAL_MAP_URL")
+    ASTRAL_OBJECTS_MAPPER_URL: dict = {}
 
-    ASTRAL_OBJECTS_URL = {
-        "Cometh": os.getenv("COMETHS_URL"),
-        "Polyanet": os.getenv("POLYANETS_URL"),
-        "Soloon": os.getenv("SOLOONS_URL")
-    }
+    def __init__(
+            self,
+            http_client: Httpclient,
+            astral_object_adapter: AstralObjectAdapter,
+            megaverse_url: str,
+            candidate_id: str,
+            goal_map_url: str,
+            cometh_url: str,
+            polyanet_url: str,
+            soloon_url: str
+    ) -> None:
+        self.http_client = http_client
+        self.astral_object_adapter = astral_object_adapter
+        self.megaverse_url = megaverse_url
+        self.candidate_id = candidate_id
+        self.goal_map_url = goal_map_url
+        self.cometh_url = cometh_url
+        self.polyanet_url = polyanet_url
+        self.soloon_url = soloon_url
 
-    def __init__(self) -> None:
-        self.api_connector = ApiConnector()
-        self.astral_object_adapter = AstralObjectAdapter()
+        self.ASTRAL_OBJECTS_MAPPER_URL = {
+            "Cometh": self.cometh_url,
+            "Polyanet": self.polyanet_url,
+            "Soloon": self.soloon_url,
+        }
 
     def fetch_astral_objects(self) -> list[AstralObject]:
-        url: str = self.GOAL_MAP_URL.format(url=self.MEGAVERSE_URL, candidate_id=self.CANDIDATE_ID)
+        url: str = self.goal_map_url.format(url=self.megaverse_url, candidate_id=self.candidate_id)
 
-        response: Response = self.api_connector.get(url)
+        response: Response = self.http_client.get(url)
 
         map_json = response.json().get('goal')
 
@@ -44,16 +55,16 @@ class ApiMapRepository(MapRepository):
     def create_astral_objects(self, astral_objects: list[AstralObject]) -> None:
         astral_objects_created: list[dict] = []
         for astral_object in astral_objects:
-            url = self.ASTRAL_OBJECTS_URL.get(astral_object.__class__.__name__)
+            url = self.ASTRAL_OBJECTS_MAPPER_URL.get(astral_object.__class__.__name__)
             print(url)
             data_json: dict = astral_object.to_dict()
-            data_json['candidateId'] = self.CANDIDATE_ID
+            data_json['candidateId'] = self.candidate_id
 
             request_data = {"url": url, "json": data_json}
             print(f"Creating {request_data}")
 
             try:
-                self.api_connector.post_retry(url=url, json=data_json)
+                self.http_client.post_retry(url=url, json=data_json)
             except Exception as e:
                 print(astral_objects_created)
                 self.__save_data_list(astral_objects_created)
@@ -66,7 +77,7 @@ class ApiMapRepository(MapRepository):
         data_list = self.__get_data_list()
         for data in data_list:
             print(f"Deleting {data}")
-            self.api_connector.delete_retry(url=data["url"], json=data["json"])
+            self.http_client.delete_retry(url=data["url"], json=data["json"])
 
     def __is_valid_map_format(self, map_json: dict) -> bool:
         if not isinstance(map_json, list):
