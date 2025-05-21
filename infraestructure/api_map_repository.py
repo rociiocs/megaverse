@@ -19,7 +19,7 @@ class ApiMapRepository(MapRepository):
 
     ASTRAL_OBJECTS_URL = {
         "Cometh": os.getenv("COMETHS_URL"),
-        "Polyanet": os.getenv("POLYANET_URL"),
+        "Polyanet": os.getenv("POLYANETS_URL"),
         "Soloon": os.getenv("SOLOONS_URL")
     }
 
@@ -44,10 +44,13 @@ class ApiMapRepository(MapRepository):
     def create_astral_objects(self, astral_objects: list[AstralObject]) -> None:
         astral_objects_created: list[dict] = []
         for astral_object in astral_objects:
-            url = self.ASTRAL_OBJECTS_URL.get(astral_object.__class__.__name__).format(url=self.MEGAVERSE_URL)
-
+            url = self.ASTRAL_OBJECTS_URL.get(astral_object.__class__.__name__)
+            print(url)
             data_json: dict = astral_object.to_dict()
             data_json['candidateId'] = self.CANDIDATE_ID
+
+            request_data = {"url": url, "json": data_json}
+            print(f"Creating {request_data}")
 
             try:
                 self.api_connector.post_retry(url=url, json=data_json)
@@ -56,7 +59,8 @@ class ApiMapRepository(MapRepository):
                 self.__save_data_list(astral_objects_created)
                 raise e
 
-            astral_objects_created.append({"url": url, "json": data_json})
+            astral_objects_created.append(request_data)
+        self.__save_data_list(astral_objects_created)
 
     def delete_megaverse_map(self) -> None:
         data_list = self.__get_data_list()
@@ -89,7 +93,11 @@ class ApiMapRepository(MapRepository):
             json.dump(data_list, f, indent=4)
 
     def __get_data_list(self) -> list[dict]:
-        with open("resources/multiple_data.json", "r") as f:
-            data_list = json.load(f)
+        try:
+            with open("resources/multiple_data.json", "r") as f:
+                data_list = json.load(f)
+        except FileNotFoundError:
+            print("No data file found")
+            data_list = []
 
         return data_list
